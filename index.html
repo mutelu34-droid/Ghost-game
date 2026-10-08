@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Knight's Night</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="decoy.css">
+</head>
+
+<body>
+    <div class="hud">
+        <h1>Knight's Night</h1>
+        <div id="stats"></div>
+        <p id="status">ໃຊ້ <b>WASD</b> / <b>ລູກສອນ</b> ເດີນ, <b>ຍະຫວ່າງ</b> ກະໂດດ, <b>J</b> ຟັນ — ເກັບດາບກ່ອນ!</p>
+    </div>
+
+    <div class="controls" aria-label="ປຸ່ມຄວບຄຸມ">
+        <button id="up">▲</button>
+        <div>
+            <button id="left">◀</button>
+            <button id="down">▼</button>
+            <button id="right">▶</button>
+        </div>
+    </div>
+
+    <!-- Jump and attack work with mouse and touch -->
+    <div class="actions">
+        <button id="upgrade" class="upgrade-button" aria-label="Upgrade weapon">Upgrade</button>
+        <button id="attack" class="attack-button" aria-label="ຟັນ">ຟັນ</button>
+        <button id="jump" class="jump-button" aria-label="ກະໂດດ">ກະໂດດ</button>
+    </div>
+
+    <!-- The map canvas is added here by super.js; sprites are drawn in code -->
+    <div id="game">
+        <span id="name"></span>
+        <span id="player"></span>
+    </div>
+
+    <div id="gameover" hidden>
+        <div class="panel">
+            <h2>You Died</h2>
+            <p id="finalScore"></p>
+            <button id="respawn">Respawn</button>
+            <button id="newgame">New game</button>
+        </div>
+    </div>
+
+    <script src="super.js"></script>
+</body>
+</html>

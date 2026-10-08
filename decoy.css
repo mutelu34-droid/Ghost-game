@@ -1,0 +1,238 @@
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+      margin: 0;
+      overflow: hidden;
+      background: #14100c;
+      color: #f3e6c4;
+      font-family: "Press Start 2P", ui-monospace, "Noto Sans Lao", monospace;
+      image-rendering: pixelated;
+}
+
+h1, p { margin: 0; }
+
+/* ---------- HUD: parchment-and-iron panels ---------- */
+.hud {
+      position: fixed;
+      top: 8px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: min(94vw, 760px);
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: #2a1a0e;
+      border: 4px solid #8a6a3a;
+      box-shadow: 0 0 0 4px #14100c, 4px 4px 0 4px #0008;
+      pointer-events: none;
+}
+
+h1 { font-size: clamp(12px, 2.4vw, 20px); color: #f2c230; text-shadow: 3px 3px 0 #5a2a10; }
+#stats { display: flex; align-items: center; gap: 14px; font-size: clamp(9px, 1.6vw, 13px); }
+.heart { display: inline-block; width: 22px; height: 22px; margin-right: 3px; background-size: 100% 100%; image-rendering: pixelated; }
+#status { color: #d9c9a0; text-align: center; font-size: clamp(8px, 1.3vw, 11px); line-height: 1.6; }
+
+/* ---------- Controls ---------- */
+.controls {
+      position: fixed;
+      left: max(12px, env(safe-area-inset-left));
+      bottom: max(12px, env(safe-area-inset-bottom));
+      z-index: 10;
+      text-align: center;
+}
+
+.actions {
+      position: fixed;
+      right: max(12px, env(safe-area-inset-right));
+      bottom: max(12px, env(safe-area-inset-bottom));
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+}
+
+button {
+      min-width: 54px;
+      min-height: 50px;
+      margin: 3px;
+      font: inherit;
+      font-size: 14px;
+      color: #f3e6c4;
+      background: #6b4423;
+      border: 4px solid #2a1a0e;
+      border-radius: 0;
+      box-shadow: inset -4px -4px 0 #4a2c14, inset 4px 4px 0 #8c6038;
+      cursor: pointer;
+      opacity: 0.92;
+      touch-action: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+}
+
+button:active { box-shadow: inset 4px 4px 0 #4a2c14; }
+button:hover, button:focus-visible { background: #84562c; opacity: 1; }
+
+.jump-button { min-width: 120px; background: #3e6b3a; box-shadow: inset -4px -4px 0 #2a4a28, inset 4px 4px 0 #5c9a56; }
+.jump-button:hover, .jump-button:focus-visible { background: #4c8247; }
+
+.attack-button { min-width: 120px; min-height: 64px; background: #9a2a3c; box-shadow: inset -4px -4px 0 #6a1a28, inset 4px 4px 0 #c24a5e; }
+.attack-button:hover, .attack-button:focus-visible { background: #b8384c; }
+
+/* ---------- Game world ---------- */
+#game {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: #1d3a1a;
+}
+
+#map {
+      position: absolute;
+      top: 0; left: 0;
+      image-rendering: pixelated;
+      z-index: 0;
+}
+
+/* night tint over the map, but under characters */
+#game::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, transparent 25%, #0a0620aa 100%);
+}
+
+#game.caught { box-shadow: inset 0 0 0 10px #9a2a3c; }
+
+#name, #player, .monster {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 48px;
+      height: 48px;
+      background-size: 100% 100%;
+      image-rendering: pixelated;
+      user-select: none;
+      will-change: transform;
+      filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
+}
+
+#name { z-index: 4; }
+#player, .monster { z-index: 3; }
+.monster.hit { opacity: 0; transition: opacity 0.2s; }
+#name.hurt { opacity: 0.4; }
+
+/* sword in the knight's hand */
+.sword-hand {
+      position: absolute;
+      left: 24px;
+      top: -8px;
+      width: 44px;
+      height: 44px;
+      background-size: 100% 100%;
+      image-rendering: pixelated;
+      transform-origin: 15% 90%;
+}
+.sword-hand.swing { animation: swing 0.25s steps(5); }
+@keyframes swing { from { transform: rotate(-70deg); } to { transform: rotate(100deg); } }
+
+/* sword lying on the ground */
+.sword-pickup {
+      position: absolute;
+      z-index: 2;
+      width: 48px;
+      height: 48px;
+      background-size: 100% 100%;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px #f2c230);
+      animation: bob 1s steps(4) infinite;
+}
+@keyframes bob { 50% { transform: translateY(-6px); } }
+
+/* slash arc */
+.slash {
+      position: absolute;
+      z-index: 5;
+      width: 170px;
+      height: 170px;
+      margin: -85px 0 0 -85px;
+      border-radius: 50%;
+      border: 8px solid transparent;
+      border-top-color: #fff;
+      border-right-color: #9fd4ff;
+      pointer-events: none;
+      animation: slash 0.25s steps(5) forwards;
+}
+@keyframes slash {
+      from { transform: rotate(-120deg) scale(0.6); opacity: 1; }
+      to   { transform: rotate(160deg) scale(1.1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { .sword-pickup { animation: none; } }
+
+/* ---------- Upgrade, monster HP, damage numbers, game over ---------- */
+[hidden] { display: none !important; }
+
+.upgrade-button { min-width: 120px; background: #8a6a1a; box-shadow: inset -4px -4px 0 #5a4410, inset 4px 4px 0 #c49a2a; }
+.upgrade-button:hover, .upgrade-button:focus-visible { background: #a58022; }
+.upgrade-button.cant { filter: grayscale(0.8) brightness(0.8); }
+.gold { color: #f2c230; }
+
+.hpbar {
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 6;
+      width: 40px;
+      height: 6px;
+      background: #2a1010;
+      border: 1px solid #000;
+      pointer-events: none;
+      will-change: transform;
+}
+.hpbar i { display: block; width: 100%; height: 100%; background: #d8344b; box-shadow: inset 0 -2px 0 #9a2a3c; }
+
+.monster.flash { filter: brightness(3) drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45)); }
+
+.dmg {
+      position: absolute;
+      z-index: 7;
+      font-size: 14px;
+      color: #fff;
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+      pointer-events: none;
+      animation: floatUp 0.8s steps(8) forwards;
+}
+.dmg.crit { color: #f2c230; font-size: 20px; }
+.dmg.hurt { color: #ff5a6e; }
+.dmg.up { color: #7cff9a; font-size: 16px; }
+@keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-46px); opacity: 0; } }
+
+#gameover {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a0508cc;
+}
+#gameover .panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 24px 28px;
+      background: #2a1a0e;
+      border: 4px solid #8a6a3a;
+      box-shadow: 0 0 0 4px #14100c, 6px 6px 0 4px #0008;
+      text-align: center;
+}
+#gameover h2 { margin: 0; font-size: clamp(20px, 5vw, 32px); color: #ff5a6e; text-shadow: 3px 3px 0 #4a0a14; }
+#gameover p { margin: 0; font-size: 12px; color: #d9c9a0; }
+#gameover button { min-width: 200px; }
+#respawn { background: #3e6b3a; box-shadow: inset -4px -4px 0 #2a4a28, inset 4px 4px 0 #5c9a56; }
